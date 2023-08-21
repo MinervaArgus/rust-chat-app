@@ -42,12 +42,13 @@ async fn events(queue: &State<Sender<Message>>, mut end: Shutdown) -> EventStrea
 #[post("/message", data = "<form>")]
 fn post(form: Form<Message>, queue: &State<Sender<Message>>) {
         let _res = queue.send(form.into_inner());
-
+}
 #[launch]
 fn rocket() -> _ {
     rocket::build()
         .manage(state: channel::<Message>(1024).0)
         .mount("/", routes![post, events])
+        .mount("/", FileServer::from(relative!("static")))
 }
 
 
